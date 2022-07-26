@@ -5,4 +5,4 @@ python run_td3.py
 
 ### run stable_lines3
 
-python run_stable_lines3.py
+python run_stablebaselines3.py
