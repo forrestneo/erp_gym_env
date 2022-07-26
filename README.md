@@ -15,8 +15,6 @@ mkdir ./erp
 
 chmod -R 777 ./erp
 
-chmod -R 777 ./erp
-
 conda activate erp
 
 
