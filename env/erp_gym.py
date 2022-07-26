@@ -202,7 +202,7 @@ class ERP(gym.Env):
         print(' rewards:', reward)
         print(' times', self.t)
         print(' obs:', obs)
-        if obs[0]<-1000 or self.t > 120:
+        if obs[0]<-1000 or self.t > 120 or reward >100:
             done = True
         return obs,reward,done,{}
 
