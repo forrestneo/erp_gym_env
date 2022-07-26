@@ -27,3 +27,5 @@ pip install stable_baselines3
 pip install gym
 
 pip install pandas
+
+pip install tensorboard
