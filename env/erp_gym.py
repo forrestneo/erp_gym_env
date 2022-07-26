@@ -198,6 +198,7 @@ class ERP(gym.Env):
         #state = self.observation_t.copy()
         obs,reward = self._take_action(action)
         reward = round(reward,4)
+        print(' action:', action)
         print(' rewards:', reward)
         print(' times', self.t)
         print(' obs:', obs)
