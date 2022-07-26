@@ -25,6 +25,7 @@ A_maintain=5
 A_sales_v=1
 P_price=25
 P_leadtime=1
+loan_max=1000
 class ERP(gym.Env):
     metadata = {'render.modes': ['human']}
     def __init__(self, ):
@@ -40,7 +41,7 @@ class ERP(gym.Env):
 
         #self.action_space_n = 5
         self.action_space = spaces.Box(
-            low=0, high=500, shape=(5, ), dtype=np.float16)
+            low=0, high=1, shape=(5, ), dtype=np.float16)
 
         # Prices contains the OHCL values for the last five prices
         self.observation_space = spaces.Box(
@@ -76,7 +77,8 @@ class ERP(gym.Env):
         self.P_leadtime = P_leadtime                #产品生产周期
 
     def _take_action(self,action):
-        loan = action[0]                            # 贷款金额
+        
+        loan = int(action[0])*100                           # 贷款金额
         pay_back = 0 #需还款金额
         loan_index = []
         for c,l in enumerate(self.loan_list):
@@ -91,7 +93,7 @@ class ERP(gym.Env):
         r_store_cost = self.R_num*self.R_store_c
         r_arrive = 0 #抵达原料数
 
-        r_buy = action[1] #购买原料数量
+        r_buy = int(action[1]) #购买原料数量
         r_cost = r_buy*self.R_price
         r_index = []
         r_way_num = 0
@@ -117,14 +119,14 @@ class ERP(gym.Env):
         loan_interest_all = self.observation_t[3]+loan_interest_t #贷款总利息
 
 
-        l_decide = action[3] #新建或处置生产线数量
+        l_decide = int(action[3]) #新建或处置生产线数量
         l_cost = self.L_price*l_decide if l_decide > 0 else l_decide*self.L_Change_cost #新建或处置生产线费用/收入
         if self.L_num + l_decide <0:
             pass
         else:
             self.L_num += l_decide
 
-        a_decide = action[4] #新建或处置销售区域数量
+        a_decide = int(action[4])*10 #新建或处置销售区域数量
         a_cost = self.A_price*a_decide if a_decide>0 else 0 #开拓销售区域费用
         a_m_cost = self.A_num*self.A_maintain #销售区域维护费用
         if self.A_num + a_decide <0:
@@ -132,7 +134,7 @@ class ERP(gym.Env):
         else:
             self.A_num += a_decide
 
-        p_pnums = action[2] #产品生产数量
+        p_pnums = int(action[2])*10 #产品生产数量
         r_dq = p_pnums*1 #原料需求数量
         l_dq = p_pnums*1 #生产线需求数量
 
@@ -187,6 +189,7 @@ class ERP(gym.Env):
         rewrad = (self.cash + self.R_num*self.R_price +self.P_num*self.P_price+Total_value-\
                   (loan_balance+loan_interest_all+0-0))/self.cash_t
         state = self.observation_t
+        
         return state,rewrad
 
     def step(self,action):
@@ -195,7 +198,10 @@ class ERP(gym.Env):
         #state = self.observation_t.copy()
         obs,reward = self._take_action(action)
         reward = round(reward,4)
-        if obs[0]<0 or self.t > 120:
+        print(' rewards:', reward)
+        print(' times', self.t)
+        print(' obs:', obs)
+        if obs[0]<-1000 or self.t > 120:
             done = True
         return obs,reward,done,{}
 
@@ -213,4 +219,8 @@ class ERP(gym.Env):
         return state
     def render(self, mode='human', close=False):
         # Render the environment to the screen
-        print(self.obs,self.r)
+        print('states：', self.s)
+        print('a',  self.a)
+        print('s_', self.s_)
+        print(' r, done, _', self.r, self.done)
+
