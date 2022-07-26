@@ -31,7 +31,7 @@ class ERP(gym.Env):
     def __init__(self, ):
         super(ERP, self).__init__()
         #self.observation_t = np.zeros(12)
-        self.cash = cash #初始化现金量
+
         self.cash_t = cash
         # self.Total_loans = Total_loans #初始化贷款总额
         # self.Loan_balance = Loan_balance #初始化贷款余额
@@ -41,7 +41,7 @@ class ERP(gym.Env):
 
         #self.action_space_n = 5
         self.action_space = spaces.Box(
-            low=0, high=1, shape=(5, ), dtype=np.float16)
+            low=0, high=500, shape=(5, ), dtype=np.float16)
 
         # Prices contains the OHCL values for the last five prices
         self.observation_space = spaces.Box(
@@ -78,7 +78,7 @@ class ERP(gym.Env):
 
     def _take_action(self,action):
         
-        loan = int(action[0])*10                          # 贷款金额
+        loan = int(action[0])*500                           # 贷款金额
         pay_back = 0 #需还款金额
         loan_index = []
         for c,l in enumerate(self.loan_list):
@@ -126,7 +126,7 @@ class ERP(gym.Env):
         else:
             self.L_num += l_decide
 
-        a_decide = int(action[4])*10 #新建或处置销售区域数量
+        a_decide = int(action[4]) #新建或处置销售区域数量
         a_cost = self.A_price*a_decide if a_decide>0 else 0 #开拓销售区域费用
         a_m_cost = self.A_num*self.A_maintain #销售区域维护费用
         if self.A_num + a_decide <0:
@@ -134,7 +134,7 @@ class ERP(gym.Env):
         else:
             self.A_num += a_decide
 
-        p_pnums = int(action[2])*10 #产品生产数量
+        p_pnums = int(action[2]) #产品生产数量
         r_dq = p_pnums*1 #原料需求数量
         l_dq = p_pnums*1 #生产线需求数量
 
@@ -189,25 +189,26 @@ class ERP(gym.Env):
         rewrad = (self.cash + self.R_num*self.R_price +self.P_num*self.P_price+Total_value-\
                   (loan_balance+loan_interest_all+0-0))/self.cash_t
         state = self.observation_t
-        
+        #print('rewrad1:',self.cash,self.R_num,self.R_price ,self.P_num,self.P_price,Total_value,loan_balance,loan_interest_all)
         return state,rewrad
 
     def step(self,action):
         done = False
         self.t += 1
+        #state = self.observation_t.copy()
         obs,reward = self._take_action(action)
         reward = round(reward,4)
-        
-        if obs[0]<-1000 or self.t < 10:
+        if self.t == 120:
+        #    print(' action:', action)
+            print(' rewards:', reward)
+        #    print(' times', self.t)
+        #    print(' obs:', obs)
+        if obs[0]<-1000 or self.t > 120 :
             done = True
-        print(' action:', action)
-        print(' rewards:', reward)
-        print(' times', self.t)
-        print(' obs:', obs)
-        print('done',done)
         return obs,reward,done,{}
 
     def reset(self):
+        self.cash = cash  # 初始化现金量
         self.t = 0
         self.loan_list = []  # 贷款金额/还款时间
         self.R_num = 0
@@ -221,5 +222,5 @@ class ERP(gym.Env):
         return state
     def render(self, mode='human', close=False):
         # Render the environment to the screen
-        print('reward',self.reward)
+        print('reward：', self.reward)
 
