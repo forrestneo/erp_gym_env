@@ -78,7 +78,7 @@ class ERP(gym.Env):
 
     def _take_action(self,action):
         
-        loan = int(action[0])*100                           # 贷款金额
+        loan = int(action[0])*10                          # 贷款金额
         pay_back = 0 #需还款金额
         loan_index = []
         for c,l in enumerate(self.loan_list):
@@ -195,15 +195,16 @@ class ERP(gym.Env):
     def step(self,action):
         done = False
         self.t += 1
-        #state = self.observation_t.copy()
         obs,reward = self._take_action(action)
         reward = round(reward,4)
+        
+        if obs[0]<-1000 or self.t < 10:
+            done = True
         print(' action:', action)
         print(' rewards:', reward)
         print(' times', self.t)
         print(' obs:', obs)
-        if obs[0]<-1000 or self.t > 120 or reward >100:
-            done = True
+        print('done',done)
         return obs,reward,done,{}
 
     def reset(self):
@@ -220,8 +221,5 @@ class ERP(gym.Env):
         return state
     def render(self, mode='human', close=False):
         # Render the environment to the screen
-        print('states：', self.s)
-        print('a',  self.a)
-        print('s_', self.s_)
-        print(' r, done, _', self.r, self.done)
+        print('reward',self.reward)
 
