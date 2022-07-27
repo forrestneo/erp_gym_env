@@ -2,14 +2,13 @@
 
 -----------------------------------------------------
 
-### run td3
-python run_td3.py
 
------------------------------------------------------
 
 ### run ppo (stable_baselines3)
 
 python run_ppo.py
+
+tensorboard --logdir=log
 
 -----------------------------------------------------
 
@@ -30,3 +29,10 @@ pip install gym
 pip install pandas
 
 pip install tensorboard
+
+-----------------------------------------------------
+
+### run td3
+python run_td3.py
+
+
